@@ -32,8 +32,7 @@ public class TeamService {
     }
 
     public Team updateTeam(String id, Team updatedTeam) {
-        for (int i = 0; i < teams.size(); i++) {
-            Team team = teams.get(i);
+        for (Team team : teams) {
             if (team.getId().equals(id)) {
                 // Update team details
                 team.setName(updatedTeam.getName());

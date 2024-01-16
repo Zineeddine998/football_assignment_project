@@ -15,20 +15,24 @@ eureka:
 
 spring:
   application:
-    name: employee-service
+    name: player-service
 
 management:
-  security:
-    enabled: false
-  endpoint:
-    health:
-      show-details: always
   endpoints:
     web:
       exposure:
-        include: "*"
-    health:
-      show-details: always
+        include: [ "prometheus" ]  # Expose all actuator endpoints
+  endpoint:
+    metrics:
+      web:
+        exposure:
+          include: '*'  # Expose all metrics
+
+
+prometheus:
+  job-name: 'spring-actuator'
+  scrape-interval: 15s  # Adjust as needed
+
 
 logging:
   level:

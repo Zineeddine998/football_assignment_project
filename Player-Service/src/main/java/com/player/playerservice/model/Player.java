@@ -2,6 +2,7 @@ package com.player.playerservice.model;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.context.annotation.Bean;
 
 import java.util.UUID;
 

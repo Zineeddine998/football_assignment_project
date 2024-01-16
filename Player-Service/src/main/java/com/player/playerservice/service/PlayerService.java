@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
@@ -53,4 +54,11 @@ public class PlayerService {
     public List<Player> getAllPlayers() {
         return new ArrayList<>(players);
     }
+
+
+    public List<Player> getAllPlayersByTeam(String teamId) {
+        return players.stream().filter(player -> player.getTeamId().equals(teamId))
+                .collect(Collectors.toList());
+    }
+
 }

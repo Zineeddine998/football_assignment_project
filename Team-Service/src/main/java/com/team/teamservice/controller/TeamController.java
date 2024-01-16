@@ -3,6 +3,7 @@ package com.team.teamservice.controller;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.team.teamservice.feign.PlayerServiceClient;
 import com.team.teamservice.model.Team;
+import com.team.teamservice.model.TeamStructure;
 import com.team.teamservice.service.TeamService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -10,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.types.PlayerDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,18 +28,19 @@ public class TeamController {
     @Autowired
     private final PlayerServiceClient playerServiceClient;
 
+    @Autowired
     public TeamController(TeamService teamService, PlayerServiceClient playerServiceClient) {
         this.teamService = teamService;
         this.playerServiceClient = playerServiceClient;
     }
 
     @ApiOperation(value = "Get team details by ID")
-    @GetMapping("/{id}")
+    @GetMapping("/{teamId}")
     @HystrixCommand(fallbackMethod = "fallbackForAllEndpoints")
-    public ResponseEntity<Team> getTeamById(@PathVariable String id) {
-        Team team = teamService.getTeamById(id);
-        List<Object> listOfPlayers = playerServiceClient.getPlayersByTeamId(id);
-        return ResponseEntity.ok(team);
+    public ResponseEntity<TeamStructure> getTeamById(@PathVariable("teamId") String teamId) {
+        Team team = teamService.getTeamById(teamId);
+        List<PlayerDTO> listOfPlayers = playerServiceClient.getPlayersByTeamId(teamId);
+        return ResponseEntity.ok(new TeamStructure(team, listOfPlayers));
     }
 
     @ApiOperation(value = "Add a new team")
@@ -71,10 +75,29 @@ public class TeamController {
         return ResponseEntity.ok(teams);
     }
 
-    // Single fallback method for all endpoints
-
-    private ResponseEntity<?> fallbackForAllEndpoints() {
-        // Implement fallback logic, e.g., return "Service Unavailable" with appropriate status code
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Service Unavailable");
+    private ResponseEntity<Team> fallbackForGetTeamById(String id) {
+        // Implement fallback logic for getTeamById
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new Team());
     }
+
+    private ResponseEntity<Team> fallbackForAddTeam(Team team) {
+        // Implement fallback logic for addTeam
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new Team());
+    }
+
+    private ResponseEntity<Team> fallbackForUpdateTeam(String id, Team team) {
+        // Implement fallback logic for updateTeam
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new Team());
+    }
+
+    private ResponseEntity<Void> fallbackForDeleteTeam(String id) {
+        // Implement fallback logic for deleteTeam
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
+    }
+
+    private ResponseEntity<List<Team>> fallbackForGetAllTeams() {
+        // Implement fallback logic for getAllTeams
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(new ArrayList<>());
+    }
+
 }
